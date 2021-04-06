@@ -15,22 +15,28 @@ class App(QWidget):
 
     def initUI(self):
         uic.loadUi('ui.ui', self)
-        pic = get_pic_bytes('35.5 55.50')
+        self.scale = 8
+        self.lat = '35.5'
+        self.lon = '55.50'
+        pic = get_pic_bytes('35.5 55.50', self.scale)
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(pic)
         self.picture.setPixmap(self.pixmap)
         self.search.clicked.connect(self.search_logic)
         self.clear.clicked.connect(self.clear_logic)
 
+
     def search_logic(self):
         address = self.inf.text()
-        lat = self.latitude.text()
-        lon = self.longitude.text()
+        self.lat = self.latitude.text()
+        self.lon = self.longitude.text()
         try:
-            pic = get_pic_bytes(lat + ' ' + lon)
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
         except Exception:
+            self.lat = '35.5'
+            self.lon = '55.50'
             self.latitube.clear()
             self.longitube.clear()
 
@@ -40,16 +46,28 @@ class App(QWidget):
         self.inf.clear()
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Left:
+        if event.key() == Qt.Key_PageUp:
+            if self.scale > 1:
+                self.scale -= 1
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
+        elif event.key() == Qt.Key_PageDown:
+            if self.scale < 18:
+                self.scale += 1
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
+        elif event.key() == Qt.Key_Left:
             self.coord('l')
             self.label.move(self.x, self.y)
         elif event.key() == Qt.Key_Right:
             self.coord('r')
             self.label.move(self.x, self.y)
-        if event.key() == Qt.Key_Up:
+        elif event.key() == Qt.Key_Up:
             self.coord('u')
             self.label.move(self.x, self.y)
-        if event.key() == Qt.Key_Down:
+        elif event.key() == Qt.Key_Down:
             self.coord('d')
             self.label.move(self.x, self.y)
 

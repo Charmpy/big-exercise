@@ -10,7 +10,8 @@ def params(up, down, scale, coords):
 
     map_params = {
         "ll": ",".join([toponym_longitude, toponym_lattitude]),
-        "spn": ",".join([delta, delta]),
-        "l": "map"
+        # "spn": ",".join([delta, delta]),
+        "l": "map",
+        "z": str(scale)
     }
     return map_params
