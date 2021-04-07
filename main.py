@@ -46,6 +46,7 @@ class App(QWidget):
         self.inf.clear()
 
     def keyPressEvent(self, event):
+        print(event.key())
         if event.key() == Qt.Key_PageUp:
             if self.scale > 1:
                 self.scale -= 1
@@ -59,17 +60,30 @@ class App(QWidget):
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
         elif event.key() == Qt.Key_Left:
-            self.coord('l')
-            self.label.move(self.x, self.y)
+            x = float(self.lat)
+            y = float(self.lon) - 360 / (4 ** self.scale)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
         elif event.key() == Qt.Key_Right:
-            self.coord('r')
-            self.label.move(self.x, self.y)
+            x = float(self.lat)
+            y = float(self.lon) + 360 / (4 ** self.scale)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
         elif event.key() == Qt.Key_Up:
-            self.coord('u')
-            self.label.move(self.x, self.y)
+            x = float(self.lat) - 180 / (4 ** self.scale)
+            y = float(self.lon)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
         elif event.key() == Qt.Key_Down:
-            self.coord('d')
-            self.label.move(self.x, self.y)
+            x = float(self.lat) + 180 / (4 ** self.scale)
+            y = float(self.lon)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
+
 
     def coord(self, key):
         if key == 'l':
