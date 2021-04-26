@@ -21,6 +21,7 @@ def get_pic_bytes(toponym_to_find, scale, type, obj, search=False):
             "featureMember"][0]["GeoObject"]
         toponym_coordinates = toponym["Point"]["pos"]
         centre_coord = toponym["Point"]["pos"]
+        toponym_info = toponym['metaDataProperty']['GeocoderMetaData']['text']
 
     else:
         json_response = response.json()
@@ -28,6 +29,7 @@ def get_pic_bytes(toponym_to_find, scale, type, obj, search=False):
             "featureMember"][0]["GeoObject"]
         centre_coord = toponym["Point"]["pos"]
         toponym_coordinates = obj
+        toponym_info = ''
 
     delta_up = toponym['boundedBy']['Envelope']['upperCorner']
     delta_down = toponym['boundedBy']['Envelope']['lowerCorner']
@@ -41,4 +43,4 @@ def get_pic_bytes(toponym_to_find, scale, type, obj, search=False):
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
     response = requests.get(map_api_server, params=map_params)
-    return [response.content, toponym_coordinates, centre_coord]
+    return [response.content, toponym_coordinates, centre_coord, toponym_info]

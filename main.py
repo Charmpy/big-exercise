@@ -23,9 +23,10 @@ class App(QWidget):
 
         self.obj = '0.0 0.0'
         rez = get_pic_bytes('35.5 55.50', self.scale, self.type, self.obj)
+        self.text.setEnabled(False)
 
         pic = rez[0]
-        self.obj = rez[-1]
+        self.obj = rez[2]
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(pic)
         self.picture.setPixmap(self.pixmap)
@@ -79,8 +80,9 @@ class App(QWidget):
         # self.lon = self.longitude.text()
         if bool(address):
             rez = get_pic_bytes(address, self.scale, self.type, self.obj, search=True)
-            self.obj = rez[-1]
+            self.obj = rez[2]
             pic = rez[0]
+            self.text.setText(rez[3])
             self.lat,  self.lon = rez[1].split()
 
             self.pixmap.loadFromData(pic)
@@ -92,6 +94,7 @@ class App(QWidget):
         pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type, self.obj, search=False)[0]
         self.pixmap.loadFromData(pic)
         self.picture.setPixmap(self.pixmap)
+        self.text.clear()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
