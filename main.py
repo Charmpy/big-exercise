@@ -21,8 +21,8 @@ class App(QWidget):
 
         self.type = 'map'
 
-        self.obj = False
-        rez = get_pic_bytes('35.5 55.50', self.scale, self.type, self.obj, search=True)
+        self.obj = '0.0 0.0'
+        rez = get_pic_bytes('35.5 55.50', self.scale, self.type, self.obj)
 
         pic = rez[0]
         self.obj = rez[-1]
@@ -39,7 +39,10 @@ class App(QWidget):
         self.btn_group.addButton(self.map, 1)
         self.btn_group.addButton(self.sat, 2)
         self.btn_group.addButton(self.uni, 3)
+
         self.btn_group.buttonClicked.connect(self.radio_group)
+        self.clear.clicked.connect(self.clear_logic)
+
 
     def radio_group(self, button):
         if self.map.isChecked():
@@ -74,7 +77,7 @@ class App(QWidget):
         address = self.inf.text()
         # self.lat = self.latitude.text()
         # self.lon = self.longitude.text()
-        try:
+        if bool(address):
             rez = get_pic_bytes(address, self.scale, self.type, self.obj, search=True)
             self.obj = rez[-1]
             pic = rez[0]
@@ -82,16 +85,13 @@ class App(QWidget):
 
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
-        except Exception:
-            self.lat = '35.5'
-            self.lon = '55.50'
-            self.latitube.clear()
-            self.longitube.clear()
 
     def clear_logic(self):
-        self.latitube.clear()
-        self.longitube.clear()
         self.inf.clear()
+        self.obj = '0.0 0.0'
+        pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type, self.obj, search=False)[0]
+        self.pixmap.loadFromData(pic)
+        self.picture.setPixmap(self.pixmap)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
