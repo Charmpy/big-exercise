@@ -24,7 +24,31 @@ class App(QWidget):
         self.picture.setPixmap(self.pixmap)
         self.search.clicked.connect(self.search_logic)
         self.clear.clicked.connect(self.clear_logic)
+        self.orientation.stateChanged.connect(self.change_toggle)
 
+    def change_toggle(self, state):
+        if state == QtCore.Qt.Checked:
+            self.inf.setEnabled(False)
+            self.latitude.setEnabled(False)
+            self.longitude.setEnabled(False)
+
+            self.search.setEnabled(False)
+            self.type.setEnabled(False)
+            self.sat.setEnabled(False)
+            self.map.setEnabled(False)
+            self.uni.setEnabled(False)
+            self.clear.setEnabled(False)
+        else:
+            self.inf.setEnabled(True)
+            self.latitude.setEnabled(True)
+            self.longitude.setEnabled(True)
+
+            self.search.setEnabled(True)
+            self.type.setEnabled(True)
+            self.sat.setEnabled(True)
+            self.map.setEnabled(True)
+            self.uni.setEnabled(True)
+            self.clear.setEnabled(True)
 
     def search_logic(self):
         address = self.inf.text()
@@ -46,43 +70,57 @@ class App(QWidget):
         self.inf.clear()
 
     def keyPressEvent(self, event):
-        print(event.key())
         if event.key() == Qt.Key_PageUp:
-            if self.scale > 1:
-                self.scale -= 1
-            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
-            self.pixmap.loadFromData(pic)
-            self.picture.setPixmap(self.pixmap)
-        elif event.key() == Qt.Key_PageDown:
             if self.scale < 18:
                 self.scale += 1
             pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
+
+        elif event.key() == Qt.Key_PageDown:
+            if self.scale > 1:
+                self.scale -= 1
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale)
+            self.pixmap.loadFromData(pic)
+            self.picture.setPixmap(self.pixmap)
+
         elif event.key() == Qt.Key_Left:
-            x = float(self.lat)
-            y = float(self.lon) - 360 / (4 ** self.scale)
+            x = float(self.lat) - 720 / (2 ** self.scale)
+            y = float(self.lon)
             pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.lat = str(x)
+            self.lon = str(y)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
+
         elif event.key() == Qt.Key_Right:
-            x = float(self.lat)
-            y = float(self.lon) + 360 / (4 ** self.scale)
+            x = float(self.lat) + 720 / (2 ** self.scale)
+            y = float(self.lon)
             pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.lat = str(x)
+            self.lon = str(y)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
+
         elif event.key() == Qt.Key_Up:
-            x = float(self.lat) - 180 / (4 ** self.scale)
-            y = float(self.lon)
+            x = float(self.lat)
+            y = float(self.lon) + 360 / (2 ** self.scale)
             pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.lat = str(x)
+            self.lon = str(y)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
+
         elif event.key() == Qt.Key_Down:
-            x = float(self.lat) + 180 / (4 ** self.scale)
-            y = float(self.lon)
+            x = float(self.lat)
+            y = round(float(self.lon) - 360 / (2 ** self.scale), 8)
             pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale)
+            self.lat = str(x)
+            self.lon = str(y)
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
+
+
 
 
     def coord(self, key):
