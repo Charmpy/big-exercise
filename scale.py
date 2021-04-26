@@ -1,7 +1,7 @@
 from math import sqrt
 
 
-def params(up, down, scale, coords):
+def params(up, down, scale, coords, type):
     u_long, u_lat = map(float, up.split())
     d_long, d_lat = map(float, down.split())
 
@@ -11,7 +11,7 @@ def params(up, down, scale, coords):
     map_params = {
         "ll": ",".join([toponym_longitude, toponym_lattitude]),
         # "spn": ",".join([delta, delta]),
-        "l": "map",
+        "l": type,
         "z": str(scale)
     }
     return map_params

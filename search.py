@@ -5,7 +5,7 @@ import requests
 from PIL import Image
 
 
-def get_pic_bytes(toponym_to_find, scale):
+def get_pic_bytes(toponym_to_find, scale, type):
     # toponym_to_find = '37.50 55.50'
 
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
@@ -28,7 +28,7 @@ def get_pic_bytes(toponym_to_find, scale):
     delta_up = toponym['boundedBy']['Envelope']['upperCorner']
     delta_down = toponym['boundedBy']['Envelope']['lowerCorner']
 
-    map_params = params(delta_up, delta_down, scale, toponym_coodrinates)
+    map_params = params(delta_up, delta_down, scale, toponym_coodrinates, type)
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
     response = requests.get(map_api_server, params=map_params)
