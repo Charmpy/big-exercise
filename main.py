@@ -21,7 +21,11 @@ class App(QWidget):
 
         self.type = 'map'
 
-        pic = get_pic_bytes('35.5 55.50', self.scale, self.type)
+        self.obj = False
+        rez = get_pic_bytes('35.5 55.50', self.scale, self.type, self.obj, search=True)
+
+        pic = rez[0]
+        self.obj = rez[-1]
         self.pixmap = QPixmap()
         self.pixmap.loadFromData(pic)
         self.picture.setPixmap(self.pixmap)
@@ -44,15 +48,13 @@ class App(QWidget):
             self.type = 'sat,skl'
         else:
             self.type = 'sat'
-        pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type)
+        pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type, self.obj, search=False)[0]
         self.pixmap.loadFromData(pic)
         self.picture.setPixmap(self.pixmap)
 
     def change_toggle(self, state):
         if state == QtCore.Qt.Checked:
             self.inf.setEnabled(False)
-            self.latitude.setEnabled(False)
-            self.longitude.setEnabled(False)
 
             self.search.setEnabled(False)
             self.sat.setEnabled(False)
@@ -61,8 +63,6 @@ class App(QWidget):
             self.clear.setEnabled(False)
         else:
             self.inf.setEnabled(True)
-            self.latitude.setEnabled(True)
-            self.longitude.setEnabled(True)
 
             self.search.setEnabled(True)
             self.sat.setEnabled(True)
@@ -72,10 +72,14 @@ class App(QWidget):
 
     def search_logic(self):
         address = self.inf.text()
-        self.lat = self.latitude.text()
-        self.lon = self.longitude.text()
+        # self.lat = self.latitude.text()
+        # self.lon = self.longitude.text()
         try:
-            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type)
+            rez = get_pic_bytes(address, self.scale, self.type, self.obj, search=True)
+            self.obj = rez[-1]
+            pic = rez[0]
+            self.lat,  self.lon = rez[1].split()
+
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
         except Exception:
@@ -93,21 +97,21 @@ class App(QWidget):
         if event.key() == Qt.Key_PageUp:
             if self.scale < 18:
                 self.scale += 1
-            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type)
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type, self.obj, search=False)[0]
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
 
         elif event.key() == Qt.Key_PageDown:
             if self.scale > 1:
                 self.scale -= 1
-            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type)
+            pic = get_pic_bytes(self.lat + ' ' + self.lon, self.scale, self.type, self.obj, search=False)[0]
             self.pixmap.loadFromData(pic)
             self.picture.setPixmap(self.pixmap)
 
         elif event.key() == Qt.Key_Left:
             x = float(self.lat) - 720 / (2 ** self.scale)
             y = float(self.lon)
-            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type, self.obj, search=False)[0]
             self.lat = str(x)
             self.lon = str(y)
             self.pixmap.loadFromData(pic)
@@ -116,7 +120,7 @@ class App(QWidget):
         elif event.key() == Qt.Key_Right:
             x = float(self.lat) + 720 / (2 ** self.scale)
             y = float(self.lon)
-            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type, self.obj, search=False)[0]
             self.lat = str(x)
             self.lon = str(y)
             self.pixmap.loadFromData(pic)
@@ -125,7 +129,7 @@ class App(QWidget):
         elif event.key() == Qt.Key_Up:
             x = float(self.lat)
             y = float(self.lon) + 360 / (2 ** self.scale)
-            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type, self.obj, search=False)[0]
             self.lat = str(x)
             self.lon = str(y)
             self.pixmap.loadFromData(pic)
@@ -134,7 +138,7 @@ class App(QWidget):
         elif event.key() == Qt.Key_Down:
             x = float(self.lat)
             y = round(float(self.lon) - 360 / (2 ** self.scale), 8)
-            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type)
+            pic = get_pic_bytes(str(x) + ' ' + str(y), self.scale, self.type, self.obj, search=False)[0]
             self.lat = str(x)
             self.lon = str(y)
             self.pixmap.loadFromData(pic)

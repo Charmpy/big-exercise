@@ -5,9 +5,7 @@ import requests
 from PIL import Image
 
 
-def get_pic_bytes(toponym_to_find, scale, type):
-    # toponym_to_find = '37.50 55.50'
-
+def get_pic_bytes(toponym_to_find, scale, type, obj, search=False):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
     geocoder_params = {
@@ -17,19 +15,30 @@ def get_pic_bytes(toponym_to_find, scale, type):
 
     response = requests.get(geocoder_api_server, params=geocoder_params)
 
-    if not response:
-        pass
+    if search:
+        json_response = response.json()
+        toponym = json_response["response"]["GeoObjectCollection"][
+            "featureMember"][0]["GeoObject"]
+        toponym_coordinates = toponym["Point"]["pos"]
+        centre_coord = toponym["Point"]["pos"]
 
-    json_response = response.json()
-    toponym = json_response["response"]["GeoObjectCollection"][
-        "featureMember"][0]["GeoObject"]
-    toponym_coodrinates = toponym["Point"]["pos"]
+    else:
+        json_response = response.json()
+        toponym = json_response["response"]["GeoObjectCollection"][
+            "featureMember"][0]["GeoObject"]
+        centre_coord = toponym["Point"]["pos"]
+        toponym_coordinates = obj
 
     delta_up = toponym['boundedBy']['Envelope']['upperCorner']
     delta_down = toponym['boundedBy']['Envelope']['lowerCorner']
 
-    map_params = params(delta_up, delta_down, scale, toponym_coodrinates, type)
+    if not response:
+        pass
+
+    map_params = params(
+        delta_up, delta_down, scale, toponym_coordinates, type, centre_coord
+    )
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
     response = requests.get(map_api_server, params=map_params)
-    return response.content
+    return [response.content, toponym_coordinates, centre_coord]
